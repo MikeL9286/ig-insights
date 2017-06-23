@@ -1,0 +1,30 @@
+{
+  "name": "ig-insights",
+  "version": "1.0.0",
+  "description": "",
+  "engines": {
+    "node": "6.10.2"
+  },
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ejs": "2.5.6",
+    "express": "4.15.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MikeL9286/ig-insights.git"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MikeL9286/ig-insights/issues"
+  },
+  "homepage": "https://github.com/MikeL9286/ig-insights#readme"
+}
