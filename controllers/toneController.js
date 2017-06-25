@@ -1,4 +1,5 @@
 var ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
+var handlebars = require('handlebars');
 
 exports.analyze_tone = function(req, res) {
   var tone_analyzer = new ToneAnalyzerV3({
@@ -13,11 +14,31 @@ exports.analyze_tone = function(req, res) {
   };
 
   tone_analyzer.tone(params, function(error, response) {
-    if (error)
+    if (error) {
       res.send(error);
-    else
-      var json = JSON.stringify(response, null, 2);
+    }
+    else {
+      map(response);
+      var json = JSON.stringify(response);
       res.json(json);
     }
-  );
+  });
+};
+
+var map = function(response) {
+  response.document_tone.tone_categories.forEach(function(category) {
+    sortTonesByRank(category.tones)
+  });
+  
+  response.sentences_tone.forEach(function(sentance) {
+    sentance.tone_categories.forEach(function(category) {
+      sortTonesByRank(category.tones);
+    });
+  });
+};
+
+var sortTonesByRank = function(tones){
+  tones.sort(function(toneA, toneB) {
+    return toneB.score - toneA.score;
+  });
 };

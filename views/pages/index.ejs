@@ -3,54 +3,84 @@
 <head>
   <% include ../partials/header.ejs %>
 </head>
-
 <body>
 
-<div class="container">
-
-<div class="row">
-<div class="col-xs-12 text-center">
-<div class="form-group">
-<div class="form-control">
-<input id="text" type="text" name="toneInput" placeholder="text" value=""/>
-</div>
-<div class="form-control">
-<input id="submit" type="submit" value="Analyze" />
-</div>
-</div>
-</div>
-</div>
-
-<div class="row">
-<div class="col-xs-12 text-center">
-<label>Result: </label><span id="result"></span>
-</div>
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-3">Text to analyze</h1>
+    <div class="row">
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-5">
+                <input id="text" class="form-control" type="text" name="toneInput" placeholder="..." value=""/>
+            </div>
+            <div class="col-xs-12 col-sm-2">
+                <input id="submit" type="submit" value="Analyze" class="btn btn-primary" />
+            </div>
+        </div>
+    <!--<p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>-->
+    </div>
+  </div>
 </div>
 
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12">
+            <div id="result">
+                <!-- analyzed-tone-template -->  
+            </div>   
+        </div>
+    </div>
 </div>
+
+<script id="analyzed-tone-template" type="text/x-handlebars-template">
+    <div class="document">
+        {{#each document_tone.tone_categories}}
+            <div>Document {{category_name}}</div>
+            <ul>
+            {{#each tones}}
+                <div>{{tone_name}} - {{score}}</div>
+            {{/each}}
+            </ul>
+        {{/each}}
+    </div>
+    {{#each sentences_tone}}
+        <div class="sentance">
+            <div>Text - {{text}}</div>
+            {{#each tone_categories}}
+                <div>Sentence {{category_name}}</div>
+                <ul>
+                {{#each tones}}
+                    <li>{{tone_name}} - {{score}}</li>
+                {{/each}}
+                </ul>
+            {{/each}}
+        </div>
+    {{/each}}
+</script> 
 
 <script>
 $(function () {
-        $('#submit').click(function (e) {
-            e.preventDefault();
+    var source   = $("#analyzed-tone-template").html();
+    var template = Handlebars.compile(source);
 
-            var text = $('#text').val();
+    $('#submit').click(function (e) {
+        e.preventDefault();
 
-            var data = {text: text};
-            $.ajax({
-                type: 'POST',
-                data: JSON.stringify(data),
-                contentType: 'application/json',
-                url: 'http://localhost:5000/analyze-tone',
-                success: function (data) {
-                  var decoded = decodeURIComponent((data+'').replace(/\+/g, '%20'));
+        var text = $('#text').val();
+        var data = {text: text};
 
-                    var result = JSON.stringify(decoded, null, 2);
-                    $('#result').html('');
-                    $('#result').html(result);
-                }
-            });
+        $.ajax({
+            type: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            url: 'http://localhost:5000/analyze-tone',
+            success: function (data) {
+                var parsedData = $.parseJSON(data);
+                var html = template(parsedData);
+                $('#result').html(html);
+            }
         });
+    });
     });
 </script>
 
