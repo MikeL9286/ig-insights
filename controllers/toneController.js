@@ -1,5 +1,4 @@
 var ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
-var handlebars = require('handlebars');
 
 exports.analyze_tone = function(req, res) {
   var tone_analyzer = new ToneAnalyzerV3({

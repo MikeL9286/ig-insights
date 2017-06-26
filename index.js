@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var toneController = require(__dirname + '/controllers/toneController');
+var igController = require(__dirname + '/controllers/igController');
 
 var app = express();
 
@@ -20,6 +21,10 @@ app.get('/', function(request, response) {
 
 app.post('/analyze-tone', function(request, response) {
   toneController.analyze_tone(request, response);
+});
+
+app.post('/get-media', function(request, response) {
+  igController.get_media(request, response);
 });
 
 app.listen(app.get('port'), function() {
