@@ -24,3 +24,15 @@
     border: 2px solid white; }
     .jumbotron .lang-logo img {
       max-width: 100%; }
+
+img {
+  max-width: 100%;
+}
+
+.body {
+  font-family: Helvetica;
+}
+
+.padding-small {
+  padding: 5px;
+}
