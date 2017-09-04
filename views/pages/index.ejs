@@ -5,21 +5,7 @@
 </head>
 <body>
 
-<div class="jumbotron jumbotron-fluid">
-  <div class="container">
-    <h1 class="display-3">Get user's media</h1>
-    <div class="row">
-        <div class="form-group">
-            <div class="col-xs-12 col-sm-5">
-                <input id="user" class="form-control" type="text" name="user" placeholder="@username" value=""/>
-            </div>
-            <div class="col-xs-12 col-sm-2">
-                <input id="submit" type="submit" value="Search" class="btn btn-primary" />
-            </div>
-        </div>
-    </div>
-  </div>
-</div>
+<% include ../partials/jumbotron.ejs %>
 
 <div class="container-fluid">
     <div class="row">
@@ -37,21 +23,19 @@
         <img src="{{items.0.user.profile_picture}}" />
         <hr/>
         {{#each items}}
-            <div class="row" class="ig-container" data-igid="{{id}}">
+            <div class="row ig-container" data-igid="{{id}}">
                 <div class="col-xs-4">
                     <div class="padding-small"><img src="{{images.standard_resolution.url}}" /></div>
                 </div>
                 <div class="col-xs-4">
-                    <div class="padding-small">{{caption.text}}</div>
+                    <div class="padding-small caption">{{caption.text}}</div>
                     <div class="padding-small">
                         <span>{{likes.count}} likes</span> | <span>{{comments.count}} comments</span>
                     </div>
                     <div class="padding-small">
                         <input type="submit" value="Analyze" class="btn btn-primary analyze-button" />
                     </div>
-                </div>
-                <div class="col-xs-4">
-                    <div id="analyze-{{id}}"></div>
+                    <div id="analyze-{{id}}" class="padding-small"></div>
                 </div>
             </div>
             <br/>
@@ -62,7 +46,7 @@
 <script id="analyzed-tone-template" type="text/x-handlebars-template">
     <div class="document">
         {{#each document_tone.tone_categories}}
-            <div>Document {{category_name}}</div>
+            <div>Caption Tones</div>
             <ul>
             {{#each tones}}
                 <div>{{tone_name}} - {{score}}</div>
@@ -70,7 +54,7 @@
             </ul>
         {{/each}}
     </div>
-    {{#each sentences_tone}}
+    <!-- {{#each sentences_tone}}
         <div class="sentance">
             <div>Text - {{text}}</div>
             {{#each tone_categories}}
@@ -82,7 +66,7 @@
                 </ul>
             {{/each}}
         </div>
-    {{/each}}
+    {{/each}} -->
 </script> 
 
 <script>
@@ -103,40 +87,40 @@ $(function () {
             url: 'http://localhost:5000/get-media',
             success: function (data) {
                 var parsedData = $.parseJSON(data);
-                console.log(parsedData);
                 var html = mediaTemplate(parsedData);
-                console.log(html);
                 $('#userMedia').html(html);
+                loadUserMedia();
             }
         });
     });
 
-    var analyzeSource   = $("#analyzed-tone-template").html();
-    var analyzeTemplate = Handlebars.compile(analyzeSource);
 
-    $('.analyze-button').click(function (e) {
-        e.preventDefault();
+    var loadUserMedia = function() {
+        var analyzeSource   = $("#analyzed-tone-template").html();
+        var analyzeTemplate = Handlebars.compile(analyzeSource);
 
-        var igContainer = $(this).parent(".ig-container");
-        var igId = igContainer.attr("data-igid");
+        $('.analyze-button').click(function(e) {
+            e.preventDefault();
 
-        var text = igContainer.find(".caption").html();
-        var data = {text: text};
+            var igContainer = $(this).closest(".ig-container");
+            var igId = igContainer.attr("data-igid");
 
-        $.ajax({
-            type: 'POST',
-            data: JSON.stringify(data),
-            contentType: 'application/json',
-            url: 'http://localhost:5000/analyze-tone',
-            success: function (data) {
-                var parsedData = $.parseJSON(data);
-                console.log(parsedData);
-                var html = analyzeTemplate(parsedData);
-                console.log(html);
-                $('#analyze-' + igId).html(html);
-            }
+            var text = igContainer.find(".caption").html();
+            var data = {text: text};
+
+            $.ajax({
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                url: 'http://localhost:5000/analyze-tone',
+                success: function (data) {
+                    var parsedData = $.parseJSON(data);
+                    var html = analyzeTemplate(parsedData);
+                    $('#analyze-' + igId).html(html);
+                }
+            });
         });
-    });
+    };
 });
 </script>
 
